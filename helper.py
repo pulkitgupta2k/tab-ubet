@@ -3,17 +3,24 @@ from bs4 import BeautifulSoup
 import json
 from pprint import pprint
 from datetime import datetime, date, timedelta
-import re
-import itertools
+import csv
+
 
 def getJSON(link):
     req = requests.get(link)
     json_data = req.json()
     return json_data
 
+def tabulate(filename, matrix):
+    with open(filename, "w") as f:
+        writer = csv.writer(f)
+        writer.writerows(matrix)
+
+
 def get_races():
     today = datetime.today().strftime("%Y/%m/%d")
-    link = "https://tab.ubet.com/api/racing/racingdaysummary/{}/[]".format(today)
+    link = "https://tab.ubet.com/api/racing/racingdaysummary/{}/[]".format(
+        today)
     print(today)
     json_data = getJSON(link)
     json_data = json_data["RacingCodes"]
@@ -24,19 +31,24 @@ def get_races():
         for meeting in meetings:
             races = meeting["Races"]
             for race in races:
-                if race["Status"] ==  "SELLING":
-                    racing_codes.append("{}/{}/{}:{}".format(today, meeting["Code"], race["RaceNumber"], code))
+                if race["Status"] == "SELLING":
+                    racing_codes.append(
+                        "{}/{}/{}:{}".format(today, meeting["Code"], race["RaceNumber"], code))
     print(racing_codes)
     return racing_codes
+
 
 def get_race_deatils(key):
     code = key.split(":")[1]
     key = key.split(":")[0]
 
-    link_race_inf = "https://tab.ubet.com/api/racingViewData/raceInformation/{}".format(key)
+    link_race_inf = "https://tab.ubet.com/api/racingViewData/raceInformation/{}".format(
+        key)
     link_tips = "https://tab.ubet.com/api/racingViewData/tips/{}".format(key)
-    link_runner_inf = "https://tab.ubet.com/api/racingViewData/racing/{}".format(key)
-    link_runner_add = "https://api.beta.tab.com.au/v1/ubet-sky-vision-service/StreamFormGuide/{}{}/runners".format(key.replace("/", ""), code)
+    link_runner_inf = "https://tab.ubet.com/api/racingViewData/racing/{}".format(
+        key)
+    link_runner_add = "https://api.beta.tab.com.au/v1/ubet-sky-vision-service/StreamFormGuide/{}{}/runners".format(
+        key.replace("/", ""), code)
 
     json_race_inf = getJSON(link_race_inf)
     json_tips = getJSON(link_tips)
@@ -62,7 +74,7 @@ def get_race_deatils(key):
         runner['form'] = runner_json['form']
         runner['weight'] = runner_json['runnerInformation']['weight']
         runners.append(runner)
-    
+
     runner_adds = []
     for runner_add_json in json_runner_add:
         runner_add = {}
@@ -97,6 +109,60 @@ def get_race_deatils(key):
     pprint(race_details)
     return race_details
 
+
+def make_matrix(details):
+    matrix = []
+    heading = ["Race Name", "Race Distance", "Tips", "Tipster", "Runner Name", "Rider Name", "Trainer Name",
+               "Rating", "Last Three Starts", "Form", "Weight", "Prize Money", "Sire", "Dam", "Total", "Win Percent", 
+               "Place Percent", "Result", "This Season", "Track", "Distance", "Track and Distance", "Class", "First Up", "Second Up",
+               "Jockey", "Firm", "Good", "Soft", "Heavy"]
+    matrix.append(heading)
+
+    for detail in details:
+        for runner in detail["runners"]:
+            row = []
+            row.append(detail["raceName"])
+            row.append(detail["raceDistance"])
+            row.append(detail["tips"])
+            row.append(detail["tipster"])
+            row.append(runner["runnerName"])
+            row.append(runner["riderName"])
+            row.append(runner["trainerName"])
+
+            row.append(runner["rating"])
+            row.append(runner["lastThreeStarts"])
+            row.append(runner["form"])
+            row.append(runner["weight"])
+            row.append(runner["prizeMoney"])
+            row.append(runner["sire"])
+            row.append(runner["dam"])
+            row.append(runner["total"])
+            row.append(runner["winPercent"])
+
+            row.append(runner["placePercent"])
+            row.append(runner["resultAtThisDistance"])
+            row.append(runner["thisSeason"])
+            row.append(runner["track"])
+            row.append(runner["distance"])
+            row.append(runner["trackAndDistance"])
+            row.append(runner["class"])
+            row.append(runner["firstUp"])
+            row.append(runner["secondUp"])
+
+            row.append(runner["jockey"])
+            row.append(runner["firm"])
+            row.append(runner["good"])
+            row.append(runner["soft"])
+            row.append(runner["heavy"])
+
+            matrix.append(row)
+    return matrix
+
 def driver():
-    # get_races()
-    get_race_deatils("2020/05/30/QS/03:R")
+    details = []
+    racing_codes = get_races()
+    for racing_code in racing_codes:
+        detail = get_race_deatils(racing_code)
+        details.append(detail)
+    matrix = make_matrix(details)
+    tabulate("details.csv", matrix)
