@@ -12,7 +12,7 @@ def getJSON(link):
     return json_data
 
 def tabulate(filename, matrix):
-    with open(filename, "w") as f:
+    with open(filename, "w", newline = '') as f:
         writer = csv.writer(f)
         writer.writerows(matrix)
 
@@ -60,6 +60,7 @@ def get_race_deatils(key):
 
     race_details["raceDistance"] = json_race_inf["raceDistance"]
     race_details["raceName"] = json_race_inf["raceName"]
+    race_details["raceTime"] = json_race_inf["raceDate"].split("T")[1][:-1]
     race_details["tips"] = json_tips["racingTips"][0]["tipsData"][0]["tips"]
     race_details["tipster"] = json_tips["racingTips"][0]["tipsData"][0]["tipster"]
 
@@ -181,7 +182,7 @@ def get_race_deatils(key):
 
 def make_matrix(details):
     matrix = []
-    heading = ["Race Name", "Race Distance", "Tips", "Tipster", "Runner Name", "Rider Name", "Trainer Name",
+    heading = ["Race Name", "Race Time", "Race Distance", "Tips", "Tipster", "Runner Name", "Rider Name", "Trainer Name",
                "Rating", "Last Three Starts", "Form", "Weight", "Prize Money", "Sire", "Dam", "Total", "Win Percent", 
                "Place Percent", "Result","This Track", "This Season", "Track", "Distance", "Track and Distance", "Class", "First Up", "Second Up",
                "Jockey", "Firm", "Good", "Soft", "Heavy"]
@@ -191,6 +192,7 @@ def make_matrix(details):
         for runner in detail["runners"]:
             row = []
             row.append(detail["raceName"])
+            row.append(detail["raceTime"])
             row.append(detail["raceDistance"])
             row.append(detail["tips"])
             row.append(detail["tipster"])
