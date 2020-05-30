@@ -11,14 +11,16 @@ def getJSON(link):
     json_data = req.json()
     return json_data
 
+
 def tabulate(filename, matrix):
-    with open(filename, "w", newline = '') as f:
+    with open(filename, "w", newline='') as f:
         writer = csv.writer(f)
         writer.writerows(matrix)
 
 
 def get_races():
     today = datetime.today().strftime("%Y/%m/%d")
+    today = "2020/05/31"
     link = "https://tab.ubet.com/api/racing/racingdaysummary/{}/[]".format(
         today)
     json_data = getJSON(link)
@@ -31,24 +33,25 @@ def get_races():
             races = meeting["Races"]
             for race in races:
                 if race["Status"] == "SELLING":
-                    race_number =  race["RaceNumber"]
+                    race_number = race["RaceNumber"]
                     if race_number < 10:
                         race_number = "0" + str(race_number)
                     racing_codes.append(
-                        "{}/{}/{}:{}".format(today, meeting["Code"],race_number, code))
+                        "{}/{}/{}:{}".format(today, meeting["Code"], race_number, code))
     return racing_codes
 
 
 def get_race_deatils(key):
     code = key.split(":")[1]
     key = key.split(":")[0]
-    
+
     link_race_inf = "https://tab.ubet.com/api/racingViewData/raceInformation/{}".format(
         key)
     link_tips = "https://tab.ubet.com/api/racingViewData/tips/{}".format(key)
     link_runner_inf = "https://tab.ubet.com/api/racingViewData/racing/{}".format(
         key)
-    link_runner_add = "https://api.beta.tab.com.au/v1/ubet-sky-vision-service/StreamFormGuide/{}{}/runners".format(key.replace("/", ""), code)
+    link_runner_add = "https://api.beta.tab.com.au/v1/ubet-sky-vision-service/StreamFormGuide/{}{}/runners".format(
+        key.replace("/", ""), code)
     # print(link_runner_add)
 
     json_race_inf = getJSON(link_race_inf)
@@ -57,12 +60,18 @@ def get_race_deatils(key):
     json_runner_add = getJSON(link_runner_add)
 
     race_details = {}
-
+    race_details["raceNumber"] = json_race_inf["raceNumber"]
     race_details["raceDistance"] = json_race_inf["raceDistance"]
     race_details["raceName"] = json_race_inf["raceName"]
     race_details["raceTime"] = json_race_inf["raceDate"].split("T")[1][:-1]
-    race_details["tips"] = json_tips["racingTips"][0]["tipsData"][0]["tips"]
-    race_details["tipster"] = json_tips["racingTips"][0]["tipsData"][0]["tipster"]
+    try:
+        race_details["tips"] = json_tips["racingTips"][0]["tipsData"][0]["tips"]
+    except:
+        race_details["tips"] = ""
+    try:
+        race_details["tipster"] = json_tips["racingTips"][0]["tipsData"][0]["tipster"]
+    except:
+        race_details["tipster"] = ""
 
     runners = []
     for runner_json in json_runner_inf["runners"]:
@@ -182,19 +191,28 @@ def get_race_deatils(key):
 
 def make_matrix(details):
     matrix = []
-    heading = ["Race Name", "Race Time", "Race Distance", "Tips", "Tipster", "Runner Name", "Rider Name", "Trainer Name",
-               "Rating", "Last Three Starts", "Form", "Weight", "Prize Money", "Sire", "Dam", "Total", "Win Percent", 
-               "Place Percent", "Result","This Track", "This Season", "Track", "Distance", "Track and Distance", "Class", "First Up", "Second Up",
-               "Jockey", "Firm", "Good", "Soft", "Heavy"]
+    heading = ["Race Number", "Race Name", "Race Time", "Race Distance", "Tip 1", "Tip 2", "Tip 3", "Tip 4", "Tipster", "Runner Name", "Rider Name", "Trainer Name",
+               "Rating", "Last Three Starts", "Form", "Weight", "Prize Money", "Sire", "Dam", "Total", "Win Percent",
+               "Place Percent", "Result_1", "Result_2", "Result_3", "This Track_1", "This Track_2", "This Track_3", 
+               "This Season_1", "This Season_2", "This Season_3", "This Season_4", "Track_1", "Track_2", "Track_3", 
+               "Distance_1", "Distance_2", "Distance_3", "Track and Distance_1", "Track and Distance_2", "Track and Distance_3", 
+               "Class_1","Class_2","Class_3", "First Up_1", "First Up_2", "First Up_3", "Second Up_1", "Second Up_2", "Second Up_3",
+               "Jockey_1","Jockey_2","Jockey_3", "Firm_1", "Firm_2", "Firm_3", "Good_1", "Good_2", "Good_3", "Soft_1", "Soft_2", "Soft_3", "Heavy_1", "Heavy_2", "Heavy_3"]
     matrix.append(heading)
 
     for detail in details:
         for runner in detail["runners"]:
             row = []
+            row.append(detail["raceNumber"])
             row.append(detail["raceName"])
             row.append(detail["raceTime"])
             row.append(detail["raceDistance"])
-            row.append(detail["tips"])
+
+            tips = detail["tips"].split("-")
+            while not len(tips) >= 4:
+                tips.append("")
+            row.extend(tips)
+
             row.append(detail["tipster"])
             row.append(runner["runnerName"])
             row.append(runner["riderName"])
@@ -211,24 +229,80 @@ def make_matrix(details):
             row.append(runner["winPercent"])
 
             row.append(runner["placePercent"])
-            row.append(runner["resultAtThisDistance"])
-            row.append(runner["thisTrack"])
-            row.append(runner["thisSeason"])
-            row.append(runner["track"])
-            row.append(runner["distance"])
-            row.append(runner["trackAndDistance"])
-            row.append(runner["class"])
-            row.append(runner["firstUp"])
-            row.append(runner["secondUp"])
 
-            row.append(runner["jockey"])
-            row.append(runner["firm"])
-            row.append(runner["good"])
-            row.append(runner["soft"])
-            row.append(runner["heavy"])
+            results = runner["resultAtThisDistance"].replace("-", ":")
+            while not len(results) >= 3:
+                results.append("")
+            row.append(results)
+
+            results = runner["thisTrack"].replace("-", ":")
+            while not len(results) >= 3:
+                results.append("")
+            row.append(results)
+
+            results = runner["thisSeason"].replace("-", ":")
+            while not len(results) >= 4:
+                results.append("")
+            row.append(results)
+
+            results = runner["track"].replace("-", ":")
+            while not len(results) >= 3:
+                results.append("")
+            row.append(results)
+
+            results = runner["distance"].replace("-", ":")
+            while not len(results) >= 3:
+                results.append("")
+            row.append(results)
+
+            results = runner["trackAndDistance"].replace("-", ":")
+            while not len(results) >= 3:
+                results.append("")
+            row.append(results)
+
+            results = runner["class"].replace("-", ":")
+            while not len(results) >= 3:
+                results.append("")
+            row.append(results)
+
+            results = runner["firstUp"].replace("-", ":")
+            while not len(results) >= 3:
+                results.append("")
+            row.append(results)
+
+            results = runner["secondUp"].replace("-", ":")
+            while not len(results) >= 3:
+                results.append("")
+            row.append(results)
+
+            results = runner["jockey"].replace("-", ":")
+            while not len(results) >= 3:
+                results.append("")
+            row.append(results)
+
+            results = runner["firm"].replace("-", ":")
+            while not len(results) >= 3:
+                results.append("")
+            row.append(results)
+
+            results = runner["good"].replace("-", ":")
+            while not len(results) >= 3:
+                results.append("")
+            row.append(results)
+
+            results = runner["soft"].replace("-", ":")
+            while not len(results) >= 3:
+                results.append("")
+            row.append(results)
+
+            results = runner["heavy"].replace("-", ":")
+            while not len(results) >= 3:
+                results.append("")
+            row.append(results)
 
             matrix.append(row)
     return matrix
+
 
 def driver():
     details = []
