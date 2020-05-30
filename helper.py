@@ -230,72 +230,72 @@ def make_matrix(details):
 
             row.append(runner["placePercent"])
 
-            results = runner["resultAtThisDistance"].replace("-", ":")
+            results = runner["resultAtThisDistance"].replace("-", ":").split(":")
             while not len(results) >= 3:
                 results.append("")
             row.append(results)
 
-            results = runner["thisTrack"].replace("-", ":")
+            results = runner["thisTrack"].replace("-", ":").split(":")
             while not len(results) >= 3:
                 results.append("")
             row.append(results)
 
-            results = runner["thisSeason"].replace("-", ":")
+            results = runner["thisSeason"].replace("-", ":").split(":")
             while not len(results) >= 4:
                 results.append("")
             row.append(results)
 
-            results = runner["track"].replace("-", ":")
+            results = runner["track"].replace("-", ":").split(":")
             while not len(results) >= 3:
                 results.append("")
             row.append(results)
 
-            results = runner["distance"].replace("-", ":")
+            results = runner["distance"].replace("-", ":").split(":")
             while not len(results) >= 3:
                 results.append("")
             row.append(results)
 
-            results = runner["trackAndDistance"].replace("-", ":")
+            results = runner["trackAndDistance"].replace("-", ":").split(":")
             while not len(results) >= 3:
                 results.append("")
             row.append(results)
 
-            results = runner["class"].replace("-", ":")
+            results = runner["class"].replace("-", ":").split(":")
             while not len(results) >= 3:
                 results.append("")
             row.append(results)
 
-            results = runner["firstUp"].replace("-", ":")
+            results = runner["firstUp"].replace("-", ":").split(":")
             while not len(results) >= 3:
                 results.append("")
             row.append(results)
 
-            results = runner["secondUp"].replace("-", ":")
+            results = runner["secondUp"].replace("-", ":").split(":")
             while not len(results) >= 3:
                 results.append("")
             row.append(results)
 
-            results = runner["jockey"].replace("-", ":")
+            results = runner["jockey"].replace("-", ":").split(":")
             while not len(results) >= 3:
                 results.append("")
             row.append(results)
 
-            results = runner["firm"].replace("-", ":")
+            results = runner["firm"].replace("-", ":").split(":")
             while not len(results) >= 3:
                 results.append("")
             row.append(results)
 
-            results = runner["good"].replace("-", ":")
+            results = runner["good"].replace("-", ":").split(":")
             while not len(results) >= 3:
                 results.append("")
             row.append(results)
 
-            results = runner["soft"].replace("-", ":")
+            results = runner["soft"].replace("-", ":").split(":")
             while not len(results) >= 3:
                 results.append("")
             row.append(results)
 
-            results = runner["heavy"].replace("-", ":")
+            results = runner["heavy"].replace("-", ":").split(":")
             while not len(results) >= 3:
                 results.append("")
             row.append(results)
