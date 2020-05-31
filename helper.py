@@ -60,7 +60,7 @@ def get_race_deatils(key):
     json_runner_add = getJSON(link_runner_add)
 
     race_details = {}
-    race_details["raceCode"] = key.split('/')[-1]
+    race_details["raceCode"] = key.split('/')[-2]
     race_details["raceLocation"] = json_race_inf["meetingName"]
     race_details["raceNumber"] = json_race_inf["raceNumber"]
     race_details["raceDistance"] = json_race_inf["raceDistance"]
@@ -76,20 +76,20 @@ def get_race_deatils(key):
         race_details["tipster_1"] = ""
 
     try:
-        race_details["tips_2"] = json_tips["racingTips"][0]["tipsData"][0]["tips"]
+        race_details["tips_2"] = json_tips["racingTips"][0]["tipsData"][1]["tips"]
     except:
         race_details["tips_2"] = ""
     try:
-        race_details["tipster_2"] = json_tips["racingTips"][0]["tipsData"][0]["tipster"]
+        race_details["tipster_2"] = json_tips["racingTips"][0]["tipsData"][1]["tipster"]
     except:
         race_details["tipster_2"] = ""
 
     try:
-        race_details["tips_3"] = json_tips["racingTips"][0]["tipsData"][0]["tips"]
+        race_details["tips_3"] = json_tips["racingTips"][0]["tipsData"][2]["tips"]
     except:
         race_details["tips_3"] = ""
     try:
-        race_details["tipster_3"] = json_tips["racingTips"][0]["tipsData"][0]["tipster"]
+        race_details["tipster_3"] = json_tips["racingTips"][0]["tipsData"][2]["tipster"]
     except:
         race_details["tipster_3"] = ""
 
@@ -105,10 +105,18 @@ def get_race_deatils(key):
         runner['lastThreeStarts'] = runner_json["lastThreeStarts"]
         runner['form'] = runner_json['form']
         runner['weight'] = runner_json['runnerInformation']['weight']
-        runner['toteWin'] = runner_json['tote']['toteWin']
-        runner['totePlace'] = runner_json['tote']['totePlace']
-        runner['fixedWin'] = runner_json['fixedPrice']['fixedWin']
-        runner['fixedPlace'] = runner_json['fixedPrice']['fixedPlace']
+        if runner_json['tote']['toteWin'] != 1638.35:
+            runner['toteWin'] = runner_json['tote']['toteWin']
+            runner['totePlace'] = runner_json['tote']['totePlace']
+        else:
+            runner['toteWin'] = ""
+            runner['totePlace'] = ""
+        if runner_json['fixedPrice']['fixedWin'] != 1:
+            runner['fixedWin'] = runner_json['fixedPrice']['fixedWin']
+            runner['fixedPlace'] = runner_json['fixedPrice']['fixedPlace']
+        else:
+            runner['fixedWin'] = ""
+            runner['fixedPlace'] = ""
         runners.append(runner)
 
     runner_adds = []
