@@ -51,7 +51,6 @@ def get_race_deatils(key):
         key)
     link_runner_add = "https://api.beta.tab.com.au/v1/ubet-sky-vision-service/StreamFormGuide/{}{}/runners".format(
         key.replace("/", ""), code)
-    print(link_runner_add)
 
     json_race_inf = getJSON(link_race_inf)
     json_tips = getJSON(link_tips)
