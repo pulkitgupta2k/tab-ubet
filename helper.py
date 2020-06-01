@@ -277,19 +277,22 @@ def make_matrix(details):
             tips = detail["tips_1"].split("-")
             while not len(tips) >= 4:
                 tips.append("")
-            row.extend(tips)
+            for tip in tips:
+                row.append(tip.replace("*", ""))
 
             row.append(detail["tipster_2"])
             tips = detail["tips_2"].split("-")
             while not len(tips) >= 4:
                 tips.append("")
-            row.extend(tips)
+            for tip in tips:
+                row.append(tip.replace("*", ""))
 
             row.append(detail["tipster_3"])
             tips = detail["tips_3"].split("-")
             while not len(tips) >= 4:
                 tips.append("")
-            row.extend(tips)
+            for tip in tips:
+                row.append(tip.replace("*", ""))
 
             row.append(runner["runnerNumber"])
             row.append(runner["runnerName"])
