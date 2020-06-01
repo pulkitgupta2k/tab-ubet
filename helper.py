@@ -20,7 +20,6 @@ def tabulate(filename, matrix):
 
 def get_races():
     today = datetime.today().strftime("%Y/%m/%d")
-    today = "2020/05/31"
     link = "https://tab.ubet.com/api/racing/racingdaysummary/{}/[]".format(
         today)
     json_data = getJSON(link)
@@ -52,7 +51,7 @@ def get_race_deatils(key):
         key)
     link_runner_add = "https://api.beta.tab.com.au/v1/ubet-sky-vision-service/StreamFormGuide/{}{}/runners".format(
         key.replace("/", ""), code)
-    # print(link_runner_add)
+    print(link_runner_add)
 
     json_race_inf = getJSON(link_race_inf)
     json_tips = getJSON(link_tips)
