@@ -166,8 +166,8 @@ def get_race_deatils(key):
         except:
             runner_add['thisSeason'] = ""
         try:
-            runner_add['last20Starts'] = runner_add_json['tabFormData']['last20StartsFirstPart'] + \
-                ' ' + runner_add_json['tabFormData']['last20StartsSecondPart']
+            runner_add['last20Starts'] = (runner_add_json['tabFormData']['last20StartsFirstPart'] + \
+                ' ' + runner_add_json['tabFormData']['last20StartsSecondPart']).replace("f")
         except:
             runner_add['last20Starts'] = ""
 
