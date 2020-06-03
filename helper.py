@@ -400,6 +400,32 @@ def make_matrix(details):
             matrix.append(row)
     return matrix
 
+def driverR():
+    details = []
+    racing_code = input("Enter the racing code: (AB/01): ")
+    today = datetime.today().strftime("%Y/%m/%d")
+    racing_code = "{}/{}:R".format(today, racing_code)
+    detail = get_race_deatils(racing_code)
+    details.append(detail)
+    matrix = make_matrix(details)
+    tabulate("details_R.csv", matrix)
+
+def driverM():
+    details = []
+    accepted_code = input("Enter the racing code: (AB): ")
+    all_codes = get_races()
+    racing_codes = []
+    for all_code in all_codes:
+        if all_code.split("/")[-2] == accepted_code:
+            racing_codes.append(all_code)
+    print(racing_codes)
+    for racing_code in racing_codes:
+        print(racing_code)
+        detail = get_race_deatils(racing_code)
+        details.append(detail)
+    matrix = make_matrix(details)
+    tabulate("details_M.csv", matrix)
+
 
 def driver():
     details = []
