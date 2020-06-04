@@ -4,7 +4,8 @@ import json
 from pprint import pprint
 from datetime import datetime, date, timedelta
 import csv
-
+import logging
+import traceback
 
 def getJSON(link):
     req = requests.get(link)
@@ -165,12 +166,18 @@ def get_race_deatils(key):
             runner_add['thisSeason'] = runner_add_json['thisSeason']
         except:
             runner_add['thisSeason'] = ""
-        try:
-            runner_add['last20Starts'] = (runner_add_json['tabFormData']['last20StartsFirstPart'] + \
-                ' ' + runner_add_json['tabFormData']['last20StartsSecondPart']).replace("f")
-        except:
-            runner_add['last20Starts'] = ""
 
+        try:
+            runner_add['last20Starts'] = (runner_add_json['tabFormData']['last20StartsFirstPart'] + ' ' + runner_add_json['tabFormData']['last20StartsSecondPart'])
+        except:
+            try:
+                runner_add['last20Starts'] = (runner_add_json['tabFormData']['last20StartsFirstPart'])
+            except:
+                try:
+                    runner_add['last20Starts'] = (runner_add_json['tabFormData']['last20StartsSecondPart'])
+                except:
+                    runner_add['last20Starts'] = ""
+        runner_add['last20Starts'] = runner_add['last20Starts'].replace("f", "")
         try:
             runner_add['track'] = runner_add_json['tabFormData']['track']
         except:
@@ -420,9 +427,13 @@ def driverM():
             racing_codes.append(all_code)
     print(racing_codes)
     for racing_code in racing_codes:
-        print(racing_code)
-        detail = get_race_deatils(racing_code)
-        details.append(detail)
+        try:
+            print(racing_code)
+            detail = get_race_deatils(racing_code)
+            details.append(detail)
+        except Exception:
+            logging.warning(traceback.format_exc())
+            pass
     matrix = make_matrix(details)
     tabulate("details_M.csv", matrix)
 
@@ -430,9 +441,14 @@ def driverM():
 def driver():
     details = []
     racing_codes = get_races()
+    logging.basicConfig(filename='debug.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
     for racing_code in racing_codes:
-        print(racing_code)
-        detail = get_race_deatils(racing_code)
-        details.append(detail)
+        try:
+            print(racing_code)
+            detail = get_race_deatils(racing_code)
+            details.append(detail)
+        except Exception:
+            logging.warning(traceback.format_exc())
+            pass
     matrix = make_matrix(details)
     tabulate("details.csv", matrix)
